@@ -37,3 +37,14 @@ EXPOSE 5000
 
 # Start command
 CMD ["bun", "src/app.js"]
+
+# CLIENT
+WORKDIR /app/client
+COPY client/package.json ./
+RUN bun install
+
+# SERVER
+WORKDIR /app/server
+COPY server/package.json ./
+RUN bun install
+
