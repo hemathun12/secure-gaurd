@@ -4,8 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "concurrently \"cd server && bun run dev\" \"cd client && bun run dev\"",
-        "install:all": "bun install && cd client && bun install && cd server && bun install",
-        "build": "cd client && bun run build"
+        "install:all": "bun install && cd client && bun install && cd server && bun install"
     },
     "devDependencies": {
         "concurrently": "^9.1.2"

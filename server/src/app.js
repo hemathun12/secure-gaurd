@@ -34,14 +34,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Secure File Guardian API is running' });
 });
 
-// Export app for Vercel
-export default app;
-
-// Start Server only if not running in Vercel (or similar serverless)
-// Vercel sets process.env.VERCEL to '1'
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+// Start Server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
