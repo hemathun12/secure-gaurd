@@ -47,7 +47,8 @@ export const uploadFile = async (req, res) => {
             size: file.size,
             encryptionAlgo: analysis.algo,
             encryptedKey: key.toString('hex'),
-            iv: iv.toString('hex')
+            iv: iv.toString('hex'),
+            aiStatus: 'Safe' // Since we only save if safe=true
         });
 
         res.status(201).json({
@@ -228,6 +229,22 @@ export const getFilesStatusForUser = (req, res) => {
     }
 };
 
+export const getStorageUsage = (req, res) => {
+    const userId = req.user.id;
+    try {
+        const totalSize = fileModel.getTotalStorageUsed(userId);
+        const limit = 1073741824; // 1GB in bytes
+        res.json({
+            used: totalSize,
+            limit: limit,
+            percentage: Math.min((totalSize / limit) * 100, 100)
+        });
+    } catch (err) {
+        console.error('Error fetching storage usage:', err);
+        res.status(500).json({ message: 'Failed to fetch storage usage' });
+    }
+};
+
 export default {
     uploadFile,
     listFiles,
@@ -237,5 +254,6 @@ export default {
     deleteFile,
     getFilePermissions,
     revokeAccess,
-    getFilesStatusForUser
+    getFilesStatusForUser,
+    getStorageUsage
 };

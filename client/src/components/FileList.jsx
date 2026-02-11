@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { listFiles, listSharedFiles, downloadFile, deleteFile } from '../api/api';
+import { getFileIcon } from '../utils/fileUtils';
 import ShareModal from './ShareModal';
 import ManageAccessModal from './ManageAccessModal';
 
@@ -101,7 +102,10 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
                         <tbody>
                             {filteredFiles.map((file) => (
                                 <tr key={file.id} className="border-b border-gray-800 hover:bg-white/5 transition-colors group">
-                                    <td className="p-4 font-medium text-gray-200 group-hover:text-neon-blue transition-colors">{file.filename}</td>
+                                    <td className="p-4 font-medium text-gray-200 group-hover:text-neon-blue transition-colors flex items-center gap-2">
+                                        <span className="text-xl">{getFileIcon(file.filename)}</span>
+                                        {file.filename}
+                                    </td>
                                     <td className="p-4 text-gray-400">{(file.size / 1024).toFixed(2)} KB</td>
                                     {type === 'shared' && <td className="p-4 text-neon-purple">{file.owner_name}</td>}
                                     <td className="p-4 text-gray-400">{new Date(file.upload_date).toLocaleDateString()}</td>

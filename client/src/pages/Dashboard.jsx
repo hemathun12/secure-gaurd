@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import FileUpload from '../components/FileUpload';
 import FileList from '../components/FileList';
+import StorageIndicator from '../components/StorageIndicator';
 
 const Dashboard = () => {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -18,6 +19,7 @@ const Dashboard = () => {
                             <span className="w-2 h-8 bg-neon-blue rounded-full shadow-[0_0_10px_rgba(0,243,255,0.5)]"></span>
                             Upload File
                         </h2>
+                        <StorageIndicator refreshKey={refreshKey} />
                         <FileUpload onUploadSuccess={handleUploadSuccess} />
                     </div>
                 </div>

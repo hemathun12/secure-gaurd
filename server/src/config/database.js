@@ -29,6 +29,7 @@ const initDb = () => {
       encryption_algo TEXT,
       encrypted_key TEXT,
       iv TEXT,
+      ai_status TEXT DEFAULT 'Safe',
       upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )

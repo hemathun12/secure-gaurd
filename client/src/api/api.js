@@ -37,5 +37,6 @@ export const getFilePermissions = (id) => api.get(`/files/${id}/permissions`);
 export const revokeAccess = (fileId, userId) => api.delete(`/files/${fileId}/permissions/${userId}`);
 export const getFilesStatus = (userId) => api.get(`/files/status/${userId}`);
 export const searchUsers = (query) => api.get(`/users/search?q=${query}`);
+export const getStorageUsage = () => api.get('/files/storage');
 
 export default api;

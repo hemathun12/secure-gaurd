@@ -7,21 +7,19 @@ export const saveFileRecord = (fileData) => {
         gcsObjectName,
         mimeType,
         size,
-        encryptionAlgo,
-        encryptedKey,
-        iv
+        encryptionAlgo, encryptedKey, iv, aiStatus
     } = fileData;
 
     const stmt = db.prepare(`
         INSERT INTO files (
             user_id, filename, gcs_object_name, mime_type, size, 
-            encryption_algo, encrypted_key, iv
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            encryption_algo, encrypted_key, iv, ai_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const info = stmt.run(
         userId, filename, gcsObjectName, mimeType, size,
-        encryptionAlgo, encryptedKey, iv
+        encryptionAlgo, encryptedKey, iv, aiStatus || 'Safe'
     );
 
     return info.lastInsertRowid;
@@ -35,6 +33,13 @@ export const getFilesByUserId = (userId) => {
 export const getFileById = (id) => {
     const stmt = db.prepare('SELECT * FROM files WHERE id = ?');
     return stmt.get(id);
+};
+
+// --- Storage Stats ---
+export const getTotalStorageUsed = (userId) => {
+    const stmt = db.prepare('SELECT SUM(size) as total_size FROM files WHERE user_id = ?');
+    const result = stmt.get(userId);
+    return result.total_size || 0;
 };
 
 // --- Sharing Features ---
@@ -120,5 +125,6 @@ export default {
             ORDER BY f.upload_date DESC
         `);
         return stmt.all(targetUserId, ownerId);
-    }
+    },
+    getTotalStorageUsed
 };

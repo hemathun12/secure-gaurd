@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FileList from '../components/FileList';
+import StorageIndicator from '../components/StorageIndicator';
 
 const FilesPage = () => {
     const [activeTab, setActiveTab] = useState('mine');
@@ -12,6 +13,9 @@ const FilesPage = () => {
                         <span className="w-2 h-8 bg-neon-purple rounded-full shadow-[0_0_10px_rgba(176,38,255,0.5)]"></span>
                         Secure Cloud Storage
                     </h2>
+                    <div className="w-64 hidden md:block">
+                        <StorageIndicator />
+                    </div>
 
                     <div className="flex bg-gray-800/50 rounded-lg p-1">
                         <button

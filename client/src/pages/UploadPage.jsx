@@ -1,9 +1,18 @@
 import FileUpload from '../components/FileUpload';
+import StorageIndicator from '../components/StorageIndicator';
+import { useState } from 'react';
 
 const UploadPage = () => {
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const handleUploadSuccess = () => {
+        setRefreshKey(prev => prev + 1);
+    };
+
     return (
         <div className="container mx-auto p-4 pt-24 animate-fade-in text-gray-200 flex justify-center">
             <div className="glass p-8 w-full max-w-2xl">
+                <StorageIndicator refreshKey={refreshKey} />
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white border-b border-gray-700 pb-4">
                     <span className="w-2 h-8 bg-neon-blue rounded-full shadow-[0_0_10px_rgba(0,243,255,0.5)]"></span>
                     Secure File Upload
@@ -16,7 +25,7 @@ const UploadPage = () => {
                         <li>Encryption: AES-128 (Small), AES-192 (Medium), AES-256 (Large)</li>
                     </ul>
                 </div>
-                <FileUpload />
+                <FileUpload onUploadSuccess={handleUploadSuccess} />
             </div>
         </div>
     );

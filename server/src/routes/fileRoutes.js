@@ -20,6 +20,7 @@ router.delete('/:id', authenticateToken, fileController.deleteFile);
 router.get('/:id/permissions', authenticateToken, fileController.getFilePermissions);
 router.delete('/:id/permissions/:userId', authenticateToken, fileController.revokeAccess);
 router.get('/status/:userId', authenticateToken, fileController.getFilesStatusForUser);
+router.get('/storage', authenticateToken, fileController.getStorageUsage);
 
 
 export default router;
