@@ -45,17 +45,11 @@ const ensureDir = (dirPath) => {
     }
 }
 
-export const uploadToGCS = async (fileStream, destination) => {
+export const uploadFile = async (fileStream, destination, mimeType) => {
     // 1. AWS S3
     if (s3Client) {
-        // AWS SDK v3 requires a stream or buffer with known length for some operations, 
-        // using Upload utility is often better for streams, but for simplicity with PutObject:
-        // We need to convert stream to buffer or use @aws-sdk/lib-storage for streams.
-        // For now, let's assume valid stream.
-
-        // Note: transforming stream to buffer for PutObjectCommand if needed, 
-        // but let's try passing the stream directly (Node.js readable stream is supported).
-
+        // Collect stream to buffer for S3 PutObject (simple implementation)
+        // For larger files or better performance, consider using @aws-sdk/lib-storage Upload
         const chunks = [];
         for await (const chunk of fileStream) {
             chunks.push(chunk);
@@ -66,6 +60,7 @@ export const uploadToGCS = async (fileStream, destination) => {
             Bucket: s3BucketName,
             Key: destination,
             Body: buffer,
+            ContentType: mimeType || 'application/octet-stream',
         });
 
         await s3Client.send(command);
@@ -77,7 +72,7 @@ export const uploadToGCS = async (fileStream, destination) => {
         const file = bucket.file(destination);
         const writeStream = file.createWriteStream({
             resumable: false,
-            contentType: 'application/octet-stream',
+            contentType: mimeType || 'application/octet-stream',
         });
 
         return new Promise((resolve, reject) => {
@@ -115,7 +110,7 @@ export const uploadToGCS = async (fileStream, destination) => {
     });
 };
 
-export const downloadFromGCS = async (fileName) => {
+export const downloadFile = async (fileName) => {
     // 1. AWS S3
     if (s3Client && fileName.startsWith('s3://')) {
         const key = fileName.replace(`s3://${s3BucketName}/`, '');
@@ -172,7 +167,7 @@ export const getFileMetadata = async (fileName) => {
     return {};
 }
 
-export const deleteFromStorage = async (filePath) => {
+export const deleteFile = async (filePath) => {
     // 1. AWS S3
     if (s3Client && filePath.startsWith('s3://')) {
         const key = filePath.replace(`s3://${s3BucketName}/`, '');
@@ -210,8 +205,8 @@ export const deleteFromStorage = async (filePath) => {
 };
 
 export default {
-    uploadToGCS,
-    downloadFromGCS,
+    uploadFile,
+    downloadFile,
     getFileMetadata,
-    deleteFromStorage
+    deleteFile
 };

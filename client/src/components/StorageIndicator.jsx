@@ -26,22 +26,20 @@ const StorageIndicator = ({ refreshKey }) => {
     };
 
     return (
-
-        <div className="bg-slate-800/80 backdrop-blur-md border border-slate-700/50 shadow-lg rounded-xl p-4 mb-6 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center justify-between">
-                <span>Storage Used</span>
-                <span className="text-blue-400 text-sm">{Math.round(usage.percentage)}%</span>
+        <div className="card p-4 mb-6 relative overflow-hidden group">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center justify-between uppercase tracking-wider">
+                <span className="text-[var(--text-primary)]">Storage</span>
+                <span className="text-brand-blue">{Math.round(usage.percentage)}%</span>
             </h3>
-            <div className="w-full bg-gray-700 rounded-full h-3 mb-2 overflow-hidden border border-white/5">
+            <div className="w-full bg-[var(--border-color)] rounded-full h-2.5 mb-2 overflow-hidden">
                 <div
-                    className="bg-gradient-to-r from-blue-500 to-emerald-500 h-3 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                    className="bg-brand-blue h-2.5 rounded-full transition-all duration-1000 ease-out shadow-sm"
                     style={{ width: `${Math.min(usage.percentage, 100)}%` }}
                 ></div>
             </div>
-            <div className="flex justify-between items-center text-xs text-gray-400">
-                <span>{formatBytes(usage.used)}</span>
-                <span>of {formatBytes(usage.limit)}</span>
+            <div className="flex justify-between items-center text-xs font-semibold text-[var(--text-secondary)]">
+                <span className="text-[var(--text-primary)]">{formatBytes(usage.used)}</span>
+                <span className="text-[var(--text-secondary)]">of {formatBytes(usage.limit)}</span>
             </div>
         </div>
     );

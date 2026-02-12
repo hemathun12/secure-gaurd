@@ -17,7 +17,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files (for local testing only, in production use GCS)
+// Serve uploaded files (for local testing only, in production use GCS/S3)
 // app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
@@ -29,10 +29,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/users', userRoutes);
 
-// Root Route
-app.get('/', (req, res) => {
-  res.json({ message: 'Secure File Guardian API is running' });
-});
+// Serve Frontend in Production
+const __dirname = path.resolve();
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+} else {
+  // Root Route for Dev
+  app.get('/', (req, res) => {
+    res.json({ message: 'Secure File Guardian API is running' });
+  });
+}
 
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {

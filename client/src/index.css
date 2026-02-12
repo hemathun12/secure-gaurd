@@ -32,21 +32,174 @@
     }
 }
 
+/* Define Semantic CSS Variables for Theme */
+/* Define Semantic CSS Variables for Theme */
+:root {
+    /* PREMIUM LIGHT THEME */
+    --bg-primary: #f4f6f9;
+    /* Soft warm gray - reduces eye strain vs pure white */
+    --bg-secondary: #ffffff;
+    /* Pure white for cards */
+
+    --text-primary: #111827;
+    /* Deep gray/black (Gray 900) for sharpest text */
+    --text-secondary: #4b5563;
+    /* Medium gray (Gray 600) for supporting text */
+    --text-tertiary: #9ca3af;
+    /* Light gray (Gray 400) for placeholders/icons */
+
+    --border-color: #e5e7eb;
+    /* Light gray (Gray 200) for subtle separation */
+    --input-bg: #ffffff;
+
+    /* Brand Colors */
+    --brand-blue: #3b82f6;
+    /* Primary Action */
+    --brand-dark: #1e293b;
+    /* Navy/Slate for distinct dark elements */
+
+    /* Shadows */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.dark {
+    /* PREMIUM DARK THEME */
+    --bg-primary: #0f172a;
+    /* Slate 900 - Deep Navy */
+    --bg-secondary: #1e293b;
+    /* Slate 800 - Lighter Navy for cards */
+
+    --text-primary: #f8fafc;
+    /* Slate 50 - High contrast white */
+    --text-secondary: #cbd5e1;
+    /* Slate 300 - Readable secondary */
+    --text-tertiary: #64748b;
+    /* Slate 500 */
+
+    --border-color: #334155;
+    /* Slate 700 */
+    --input-bg: rgba(15, 23, 42, 0.6);
+
+    /* Shadows - Glow effect for dark mode */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom easing for bouncy toggle */
+.ease-spring {
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Base styles */
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
-    @apply bg-slate-950 text-slate-200 font-sans antialiased min-h-screen;
-    background-image:
-        radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 75%),
-        radial-gradient(circle at 0% 50%, #0f172a 0%, transparent 50%);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Utility Classes for Premium UI */
+
+/* 1. Cards (Replaces/Augments .glass) */
+.card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    /* rounded-2xl */
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass effect - Keep for specific overlays or dark mode enhancement, 
+   but reset to match new card style in light mode if needed */
 .glass {
-    @apply bg-slate-900/60 backdrop-blur-md border border-slate-700/50 shadow-xl rounded-xl;
+    @apply backdrop-blur-xl transition-all duration-300;
+    background-color: rgba(255, 255, 255, 0.7);
+    /* Slightly more opaque for clarity */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: var(--card-shadow);
+    border-radius: 1rem;
 }
 
+.dark .glass {
+    background-color: rgba(30, 41, 59, 0.7);
+    /* Slate-800 with opacity */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card:hover,
+.glass:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--brand-blue);
+    /* Subtle blue border on hover */
+}
+
+/* 2. Inputs */
 .input-field {
-    @apply w-full p-3 bg-slate-900/50 border border-slate-700 rounded-lg focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all duration-300 text-white placeholder-slate-500;
+    @apply w-full p-3.5 rounded-xl outline-none transition-all duration-300;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+.input-field:focus {
+    border-color: var(--brand-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    /* Ring effect */
+}
+
+.input-field::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* 3. Buttons */
 .btn-primary {
-    @apply w-full py-3 px-4 bg-brand-blue hover:bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300;
+    @apply w-full py-3.5 px-6 bg-brand-blue text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:bg-blue-600 active:scale-[0.98] transition-all duration-200;
+}
+
+/* Refined Transitions */
+body,
+.card,
+.glass,
+.input-field,
+nav,
+footer {
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* View Transitions API - Circular Reveal */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+    display: block;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999;
+}
+
+/* Fallback for browsers without View Transitions */
+@media (prefers-reduced-motion: reduce) {
+
+    ::view-transition-group(root),
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none !important;
+    }
 }

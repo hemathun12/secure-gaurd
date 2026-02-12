@@ -34,9 +34,9 @@ export const uploadFile = async (req, res) => {
         // Encrypt logic
         const encryptedStream = cryptoService.encryptStream(fileStream, key, iv, analysis.algo);
 
-        // 3. Upload to GCS
+        // 3. Upload to Storage (S3/GCS/Local)
         const gcsObjectName = `uploads/${userId}/${Date.now()}-${file.originalname}.enc`;
-        await storageService.uploadToGCS(encryptedStream, gcsObjectName);
+        await storageService.uploadFile(encryptedStream, gcsObjectName, 'application/octet-stream');
 
         // 4. Save Metadata to DB
         const fileId = fileModel.saveFileRecord({
@@ -85,11 +85,11 @@ export const downloadFile = async (req, res) => {
         const key = Buffer.from(fileRecord.encrypted_key, 'hex');
         const iv = Buffer.from(fileRecord.iv, 'hex');
 
-        // Get GCS Stream
-        const gcsStream = storageService.downloadFromGCS(fileRecord.gcs_object_name);
+        // Get Storage Stream
+        const storageStream = await storageService.downloadFile(fileRecord.gcs_object_name);
 
         // Decrypt Stream
-        const decryptedStream = cryptoService.decryptStream(gcsStream, key, iv, fileRecord.encryption_algo);
+        const decryptedStream = cryptoService.decryptStream(storageStream, key, iv, fileRecord.encryption_algo);
 
         // Set Headers
         res.setHeader('Content-Disposition', `attachment; filename="${fileRecord.filename}"`);
@@ -156,7 +156,7 @@ export const deleteFile = async (req, res) => {
 
         // 1. Delete from Storage
         try {
-            await storageService.deleteFromStorage(file.gcs_object_name);
+            await storageService.deleteFile(file.gcs_object_name);
         } catch (storageErr) {
             console.error('Storage deletion error (continuing to DB cleanup):', storageErr);
         }

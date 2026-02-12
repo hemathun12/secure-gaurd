@@ -64,7 +64,7 @@ const FileUpload = ({ onUploadSuccess }) => {
     return (
         <div className="w-full">
             <div
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${file ? 'border-neon-blue bg-neon-blue/5' : 'border-gray-600 hover:border-gray-500 hover:bg-white/5'
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${file ? 'border-brand-blue bg-blue-50 dark:bg-blue-900/20' : 'border-[var(--border-color)] hover:border-brand-blue hover:bg-[var(--bg-primary)] dark:hover:bg-slate-800/50'
                     }`}
             >
                 <input
@@ -76,11 +76,11 @@ const FileUpload = ({ onUploadSuccess }) => {
 
                 {!file ? (
                     <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center justify-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                        <div className="w-12 h-12 rounded-full bg-[var(--bg-primary)] dark:bg-gray-700 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform shadow-sm border border-[var(--border-color)]">
+                            <svg className="w-6 h-6 text-[var(--text-secondary)] dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                         </div>
-                        <span className="text-gray-300 font-medium">Click to upload or drag and drop</span>
-                        <span className="text-xs text-gray-500">Supported: PDF, DOCX, JPG, PNG, TXT (Max 50MB)</span>
+                        <span className="text-[var(--text-primary)] font-semibold">Click to upload or drag and drop</span>
+                        <span className="text-xs text-[var(--text-tertiary)]">Supported: PDF, DOCX, JPG, PNG, TXT (Max 50MB)</span>
                     </label>
                 ) : (
                     <div className="text-left">
@@ -88,17 +88,17 @@ const FileUpload = ({ onUploadSuccess }) => {
                             <div className="flex items-center gap-3">
                                 <span className="text-3xl">{getFileIcon(file.name)}</span>
                                 <div>
-                                    <p className="font-medium text-neon-blue truncate max-w-[200px]">{file.name}</p>
-                                    <p className="text-xs text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <p className="font-medium text-brand-blue truncate max-w-[200px]">{file.name}</p>
+                                    <p className="text-xs text-[var(--text-secondary)]">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                             </div>
-                            <button onClick={() => setFile(null)} className="text-gray-500 hover:text-red-400 transition-colors">
+                            <button onClick={() => setFile(null)} className="text-[var(--text-tertiary)] hover:text-red-500 transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
                         <div className={`border rounded-lg p-2.5 flex items-center gap-2 mb-2 animate-fade-in ${aiStatus?.safe
-                            ? 'bg-emerald-500/10 border-emerald-500/20'
-                            : 'bg-red-500/10 border-red-500/20'
+                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
+                            : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
                             }`}>
                             <div className={`rounded-full p-1 ${aiStatus?.safe ? 'bg-emerald-500/20' : 'bg-red-500/20'
                                 }`}>

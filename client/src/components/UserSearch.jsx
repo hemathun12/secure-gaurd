@@ -1,13 +1,12 @@
 
 import { useState } from 'react';
 import { searchUsers } from '../api/api';
-import UserFileAccessModal from './UserFileAccessModal';
+// UserFileAccessModal import removed
 
-const UserSearch = () => {
+const UserSearch = ({ onAccess }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [searching, setSearching] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -25,62 +24,61 @@ const UserSearch = () => {
     };
 
     return (
-        <div className="glass p-6 rounded-lg shadow-md mb-6 relative">
-            <h3 className="text-xl font-semibold mb-4 text-white">Find Users</h3>
-            <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-                <input
-                    type="text"
-                    placeholder="Search by username or email..."
-                    className="flex-1 input-field bg-slate-900/50 border-slate-700 focus:border-brand-blue"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                />
-                <button
-                    type="submit"
-                    className="bg-brand-blue text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors font-medium"
-                    disabled={searching}
-                >
-                    {searching ? '...' : 'Search'}
-                </button>
-            </form>
+        <div className="w-full relative">
+            <div className="transition-all duration-300">
+                <form onSubmit={handleSearch} className="flex gap-4 mb-8">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            placeholder="Search by username or email..."
+                            className="input-field !pl-12"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-[var(--text-tertiary)]">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                    </div>
+                    <button
+                        type="submit"
+                        className="bg-brand-blue hover:bg-blue-600 text-white px-8 py-4 rounded-2xl shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50 transition-all font-bold text-sm uppercase tracking-wider"
+                        disabled={searching}
+                    >
+                        {searching ? '...' : 'Search'}
+                    </button>
+                </form>
 
-            {results.length > 0 && (
-                <ul className="divide-y divide-slate-700">
-                    {results.map(user => (
-                        <li key={user.id} className="py-3 flex justify-between items-center group">
-                            <div>
-                                <p className="font-medium text-white">{user.username}</p>
-                                <p className="text-sm text-slate-400">{user.email}</p>
-                                {user.authorized_files && (
-                                    <div className="mt-2 flex flex-wrap gap-1">
-                                        {user.authorized_files.split(',').map((filename, idx) => (
-                                            <span key={idx} className="text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-                                                {filename}
-                                            </span>
-                                        ))}
+                {results.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {results.map(user => (
+                            <div key={user.id} className="card p-5 group flex justify-between items-center hover:shadow-md transition-all">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center font-bold text-[var(--text-secondary)]">
+                                        {user.username.charAt(0).toUpperCase()}
                                     </div>
-                                )}
+                                    <div>
+                                        <p className="font-bold text-[var(--text-primary)]">{user.username}</p>
+                                        <p className="text-xs text-[var(--text-secondary)]">{user.email}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => onAccess && onAccess(user)}
+                                    className="px-3 py-1.5 text-xs font-bold text-brand-blue bg-blue-50 hover:bg-brand-blue hover:text-white border border-brand-blue/20 rounded-lg transition-all uppercase tracking-wide"
+                                >
+                                    Access
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setSelectedUser(user)}
-                                className="px-3 py-1.5 text-xs font-bold text-brand-blue border border-brand-blue/50 rounded hover:bg-brand-blue/10 transition-all uppercase tracking-wide"
-                            >
-                                Manage Access
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-            {results.length === 0 && query && !searching && (
-                <p className="text-sm text-gray-700">No users found.</p>
-            )}
+                        ))}
+                    </div>
+                )}
+                {results.length === 0 && query && !searching && (
+                    <div className="text-center py-12 bg-[var(--bg-primary)] dark:bg-slate-900/50 rounded-2xl border border-dashed border-[var(--border-color)]">
+                        <p className="text-[var(--text-secondary)]">No users found matching "{query}"</p>
+                    </div>
+                )}
+            </div>
 
-            {selectedUser && (
-                <UserFileAccessModal
-                    targetUser={selectedUser}
-                    onClose={() => setSelectedUser(null)}
-                />
-            )}
+            {/* Modal removed/lifted up */}
         </div>
     );
 };

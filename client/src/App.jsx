@@ -7,6 +7,7 @@ import UploadPage from './pages/UploadPage';
 import FilesPage from './pages/FilesPage';
 import SearchPage from './pages/SearchPage';
 import ProfilePage from './pages/ProfilePage';
+import LandingPage from './pages/LandingPage';
 import Navbar from './components/Navbar';
 
 const ProtectedRoute = ({ children }) => {
@@ -18,9 +19,9 @@ const ProtectedRoute = ({ children }) => {
 
 function AppRoutes() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 pt-24 flex-grow">
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -49,11 +50,23 @@ function AppRoutes() {
             </ProtectedRoute>
           } />
 
-          <Route path="/" element={<Navigate to="/files" />} />
-          <Route path="*" element={<Navigate to="/files" />} />
+          <Route path="/" element={
+            <div className="animate-fade-in">
+              <LandingPage />
+            </div>
+          } />
+
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
-    </>
+      <footer className="w-full bg-[var(--bg-primary)] border-t border-[var(--border-color)] py-8 transition-colors duration-300 mt-auto">
+        <div className="container mx-auto text-center">
+          <p className="text-sm font-medium text-[var(--text-secondary)]">
+            &copy; {new Date().getFullYear()} Secure File Guardian. <span className="text-brand-blue">AI-Driven Secure File Storage & Sharing Platform.</span>
+          </p>
+        </div>
+      </footer>
+    </div>
   )
 }
 

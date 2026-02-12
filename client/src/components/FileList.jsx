@@ -3,6 +3,7 @@ import { listFiles, listSharedFiles, downloadFile, deleteFile } from '../api/api
 import { getFileIcon } from '../utils/fileUtils';
 import ShareModal from './ShareModal';
 import ManageAccessModal from './ManageAccessModal';
+import { Download, Share2, Trash2, Shield, Calendar, HardDrive, User, MoreVertical } from 'lucide-react';
 
 const FileList = ({ refreshTrigger, type = 'mine' }) => {
     const [files, setFiles] = useState([]);
@@ -54,7 +55,6 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
 
         try {
             await deleteFile(fileId);
-            // Optimistically remove from list
             setFiles(files.filter(f => f.id !== fileId));
         } catch (error) {
             console.error('Delete failed', error);
@@ -62,92 +62,121 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
         }
     };
 
-    if (loading) return <div className="flex justify-center items-center h-40"><div className="w-8 h-8 border-4 border-neon-blue border-t-transparent rounded-full animate-spin"></div></div>;
+    if (loading) return (
+        <div className="flex justify-center items-center h-64">
+            <div className="relative w-16 h-16">
+                <div className="absolute top-0 left-0 w-full h-full border-4 border-slate-200 dark:border-slate-700 rounded-full"></div>
+                <div className="absolute top-0 left-0 w-full h-full border-4 border-brand-blue rounded-full animate-spin border-t-transparent"></div>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-                <div className="relative w-full max-w-xs">
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="relative w-full md:w-96">
                     <input
                         type="text"
-                        placeholder="Search files..."
-                        className="w-full bg-black/20 border border-gray-700 text-gray-200 text-sm rounded-lg focus:ring-neon-blue focus:border-neon-blue block p-2.5 pl-10 placeholder-gray-500"
+                        placeholder="Search your secure vault..."
+                        className="input-field !pl-12"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[var(--text-tertiary)]">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
+                </div>
+                <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                    {filteredFiles.length} file{filteredFiles.length !== 1 ? 's' : ''} found
                 </div>
             </div>
 
             {filteredFiles.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 border border-dashed border-gray-700 rounded-lg">
-                    <p>{searchTerm ? 'No matching files found.' : (type === 'shared' ? 'No files shared with you yet.' : 'No files uploaded yet.')}</p>
+                <div className="flex flex-col items-center justify-center py-20 bg-[var(--bg-primary)]/50 dark:bg-slate-900/20 border-2 border-dashed border-[var(--border-color)] rounded-3xl">
+                    <div className="bg-[var(--bg-secondary)] dark:bg-slate-800 p-4 rounded-full mb-4 shadow-sm">
+                        <HardDrive className="w-8 h-8 text-[var(--text-tertiary)]" />
+                    </div>
+                    <p className="text-[var(--text-secondary)] font-medium text-lg">
+                        {searchTerm ? 'No matching files found.' : (type === 'shared' ? 'No files shared with you yet.' : 'Your vault is empty.')}
+                    </p>
+                    {type === 'mine' && !searchTerm && <p className="text-[var(--text-tertiary)] text-sm mt-2">Upload a file to get started.</p>}
                 </div>
             ) : (
-                <div className="overflow-x-auto rounded-lg border border-gray-700/50">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b border-gray-700 text-gray-400 text-sm bg-black/20">
-                                <th className="p-4 font-medium">Filename</th>
-                                <th className="p-4 font-medium">Size</th>
-                                {type === 'shared' && <th className="p-4 font-medium">Owner</th>}
-                                <th className="p-4 font-medium">Uploaded</th>
-                                <th className="p-4 font-medium text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredFiles.map((file) => (
-                                <tr key={file.id} className="border-b border-gray-800 hover:bg-white/5 transition-colors group">
-                                    <td className="p-4 font-medium text-gray-200 group-hover:text-neon-blue transition-colors flex items-center gap-2">
-                                        <span className="text-xl">{getFileIcon(file.filename)}</span>
-                                        {file.filename}
-                                    </td>
-                                    <td className="p-4 text-gray-400">{(file.size / 1024).toFixed(2)} KB</td>
-                                    {type === 'shared' && <td className="p-4 text-neon-purple">{file.owner_name}</td>}
-                                    <td className="p-4 text-gray-400">{new Date(file.upload_date).toLocaleDateString()}</td>
-                                    <td className="p-4 text-center flex justify-center gap-2">
-                                        <button
-                                            onClick={() => handleDownload(file.id, file.filename)}
-                                            className="px-3 py-1.5 text-xs font-bold text-neon-blue border border-neon-blue/30 rounded hover:bg-neon-blue/10 hover:shadow-[0_0_10px_rgba(0,243,255,0.2)] transition-all duration-300"
-                                            title="Download"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                        </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredFiles.map((file, index) => (
+                        <div
+                            key={file.id}
+                            className="group relative card p-5 animate-fade-in flex flex-col justify-between h-[220px]"
+                            style={{ animationDelay: `${index * 50}ms` }}
+                        >
+                            {/* Top Access Metadata */}
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="p-3 bg-[var(--bg-primary)] rounded-xl text-3xl group-hover:scale-110 transition-transform duration-300">
+                                    {getFileIcon(file.filename)}
+                                </div>
+                                {type === 'shared' && (
+                                    <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800">
+                                        <User className="w-3 h-3" />
+                                        {file.owner_name}
+                                    </span>
+                                )}
+                            </div>
 
-                                        {type === 'mine' && (
-                                            <>
-                                                <button
-                                                    onClick={() => setSelectedFileForShare(file)}
-                                                    className="px-3 py-1.5 text-xs font-bold text-brand-blue border border-brand-blue/30 rounded hover:bg-brand-blue/10 transition-all duration-300"
-                                                    title="Share"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => setSelectedFileForAccess(file)}
-                                                    className="px-3 py-1.5 text-xs font-bold text-emerald-500 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-all duration-300"
-                                                    title="Manage Access"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(file.id)}
-                                                    className="px-3 py-1.5 text-xs font-bold text-red-500 border border-red-500/30 rounded hover:bg-red-500/10 transition-all duration-300"
-                                                    title="Delete"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
-                                            </>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            {/* Main Content */}
+                            <div>
+                                <h3 className="font-bold text-[var(--text-primary)] truncate mb-1 text-lg group-hover:text-brand-blue transition-colors">
+                                    {file.filename}
+                                </h3>
+                                <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)] font-medium">
+                                    <span className="flex items-center gap-1">
+                                        <HardDrive className="w-3 h-3" />
+                                        {(file.size / 1024).toFixed(2)} KB
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Calendar className="w-3 h-3" />
+                                        {new Date(file.upload_date).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Action Bar (Reveals on Hover mostly, but always accessible) */}
+                            <div className="mt-4 pt-4 border-t border-[var(--border-color)] flex justify-end gap-2">
+                                <button
+                                    onClick={() => handleDownload(file.id, file.filename)}
+                                    className="p-2 text-[var(--text-secondary)] hover:text-brand-blue hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                    title="Download"
+                                >
+                                    <Download className="w-4 h-4" />
+                                </button>
+
+                                {type === 'mine' && (
+                                    <>
+                                        <button
+                                            onClick={() => setSelectedFileForShare(file)}
+                                            className="p-2 text-[var(--text-secondary)] hover:text-brand-blue hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                            title="Share"
+                                        >
+                                            <Share2 className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedFileForAccess(file)}
+                                            className="p-2 text-[var(--text-secondary)] hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                            title="Manage Access"
+                                        >
+                                            <Shield className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(file.id)}
+                                            className="p-2 text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 

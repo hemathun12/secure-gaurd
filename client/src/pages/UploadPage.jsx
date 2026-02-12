@@ -10,22 +10,37 @@ const UploadPage = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 pt-24 animate-fade-in text-gray-200 flex justify-center">
-            <div className="glass p-8 w-full max-w-2xl">
-                <StorageIndicator refreshKey={refreshKey} />
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white border-b border-gray-700 pb-4">
-                    <span className="w-2 h-8 bg-neon-blue rounded-full shadow-[0_0_10px_rgba(0,243,255,0.5)]"></span>
-                    Secure File Upload
-                </h2>
-                <div className="mb-6 text-gray-400 text-sm bg-blue-900/20 p-4 rounded-lg border border-blue-500/30">
-                    <p className="font-semibold text-blue-400 mb-2">AI Security Rules:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                        <li>Allowed: PDF, DOCX, XLSX, JPG, PNG, TXT</li>
-                        <li>Blocked: EXE, BAT, CMD, APK, JS</li>
-                        <li>Encryption: AES-128 (Small), AES-192 (Medium), AES-256 (Large)</li>
+        <div className="w-full text-[var(--text-primary)] animate-slide-up">
+            {/* Page Header */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+                <div>
+                    <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Secure Upload</h2>
+                    <p className="text-[var(--text-secondary)]">Encrypt and store your documents safely.</p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <div className="hidden lg:block w-64">
+                        <StorageIndicator refreshKey={refreshKey} />
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="w-full max-w-3xl mx-auto">
+                <div className="mb-8 text-sm bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-color)] shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="w-1 h-6 bg-brand-blue rounded-full"></span>
+                        <p className="font-semibold text-brand-blue text-lg">AI Security Protocols</p>
+                    </div>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 ml-3 text-[var(--text-secondary)]">
+                        <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>Allowed: PDF, DOCX, XLSX, JPG, PNG, TXT</li>
+                        <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>Blocked: EXE, BAT, CMD, APK, JS</li>
+                        <li className="flex items-center gap-2 md:col-span-2"><div className="w-1.5 h-1.5 rounded-full bg-brand-blue"></div>Encryption: AES-256 (Military Grade)</li>
                     </ul>
                 </div>
-                <FileUpload onUploadSuccess={handleUploadSuccess} />
+
+                <div className="card p-0 overflow-hidden">
+                    <FileUpload onUploadSuccess={handleUploadSuccess} />
+                </div>
             </div>
         </div>
     );

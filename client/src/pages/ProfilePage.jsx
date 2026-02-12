@@ -6,43 +6,60 @@ const ProfilePage = () => {
     if (!user) return null;
 
     return (
-        <div className="container mx-auto p-4 pt-24 animate-fade-in text-gray-200 flex justify-center">
-            <div className="glass p-8 w-full max-w-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-neon-blue/20 rounded-full blur-[50px] -mr-10 -mt-10"></div>
+        <div className="w-full text-[var(--text-primary)] animate-slide-up">
+            {/* Page Header */}
+            <div className="mb-10">
+                <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2">User Profile</h2>
+                <p className="text-[var(--text-secondary)]">Manage your account settings and preferences.</p>
+            </div>
 
-                <h2 className="text-2xl font-bold mb-8 flex items-center gap-2 text-white border-b border-gray-700 pb-4 relative z-10">
-                    <span className="w-2 h-8 bg-pink-500 rounded-full shadow-[0_0_10px_rgba(236,72,153,0.5)]"></span>
-                    User Profile
-                </h2>
+            {/* Profile Content */}
+            <div className="max-w-4xl">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                    {/* User Card */}
+                    <div className="w-full md:w-1/3 bg-[var(--bg-secondary)] rounded-2xl p-6 border border-[var(--border-color)] shadow-sm">
+                        <div className="flex flex-col items-center text-center">
+                            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-brand-blue to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl mb-4">
+                                {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <h3 className="text-xl font-bold text-[var(--text-primary)]">{user.username}</h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-6">Free Plan Member</p>
 
-                <div className="space-y-6 relative z-10">
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-neon-blue to-neon-purple flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                            {user.username.charAt(0).toUpperCase()}
+                            <button
+                                onClick={logout}
+                                className="w-full py-2.5 px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                Sign Out
+                            </button>
                         </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Username</p>
-                            <p className="text-xl font-bold text-white">{user.username}</p>
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-color)] shadow-sm">
+                            <p className="text-sm font-medium text-[var(--text-tertiary)] mb-1">Email Address</p>
+                            <p className="text-lg font-semibold text-[var(--text-primary)] truncate">{user.email}</p>
+                        </div>
+
+                        <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-color)] shadow-sm">
+                            <p className="text-sm font-medium text-[var(--text-tertiary)] mb-1">Account ID</p>
+                            <p className="text-sm font-mono text-[var(--text-secondary)] break-all">{user.id}</p>
+                        </div>
+
+                        <div className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-color)] shadow-sm md:col-span-2">
+                            <p className="text-sm font-medium text-[var(--text-secondary)] mb-4">Security Status</p>
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
+                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                    <span className="text-sm font-semibold">Scanning Active</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-[var(--text-secondary)] text-sm">
+                                    <span>Encryption: AES-256</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Email Address</p>
-                        <p className="text-lg text-white">{user.email}</p>
-                    </div>
-
-                    <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                        <p className="text-sm text-gray-400 mb-1">Account ID</p>
-                        <p className="text-lg text-gray-300 font-mono">{user.id}</p>
-                    </div>
-
-                    <button
-                        onClick={logout}
-                        className="w-full mt-8 py-3 px-4 bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/40 rounded-lg font-bold transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Sign Out
-                    </button>
                 </div>
             </div>
         </div>

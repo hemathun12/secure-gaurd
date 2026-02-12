@@ -1,7 +1,5 @@
 # Use the official Bun image
-FROM oven/bun:1
-
-# Set the working directory
+FROM oven/bun:1 as base
 WORKDIR /app
 
 # Copy root package.json
@@ -19,8 +17,17 @@ RUN cd server && bun install
 # Copy source code
 COPY . .
 
-# Expose ports
-EXPOSE 5000 5173
+# Build the client
+WORKDIR /app/client
+RUN bun run build
+
+# Setup for production
+ENV NODE_ENV=production
+WORKDIR /app/server
+
+# Expose the server port (5000)
+# Note: AWS App Runner or ECS usually expects one exposed port
+EXPOSE 5000
 
 # Start the application
-CMD ["bun", "run", "dev"]
+CMD ["bun", "src/app.js"]

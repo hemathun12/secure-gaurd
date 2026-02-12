@@ -16,33 +16,35 @@ const Login = () => {
         e.preventDefault();
         try {
             await login(email, password);
-            navigate('/dashboard');
+            navigate('/files'); // Redirect to files after login
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
         }
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-slate-950 pt-16">
-            <div className="glass p-8 w-full max-w-md animate-slide-up relative overflow-hidden border-t-4 border-t-brand-blue">
+        <div className="flex justify-center items-center min-h-[calc(100vh-80px)] pt-20 pb-10">
+            <div className="card w-full max-w-md p-8 animate-slide-up relative overflow-hidden shadow-2xl">
 
-                <h2 className="text-2xl font-bold mb-2 text-center text-white">
-                    Welcome Back
-                </h2>
-                <p className="text-center text-slate-400 text-sm mb-8">Sign in to access your secured files</p>
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500 mb-2">
+                        Welcome Back
+                    </h2>
+                    <p className="text-[var(--text-secondary)]">Sign in to your secure cloud storage</p>
+                </div>
 
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-3 rounded-lg mb-6 text-center text-sm">
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 p-4 rounded-xl mb-6 text-center text-sm font-medium">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Email Address</label>
+                        <label className="block text-[var(--text-secondary)] text-sm font-medium mb-2 pl-1">Email Address</label>
                         <input
                             type="email"
-                            className="input-field bg-slate-900 border-slate-700 focus:border-brand-blue"
+                            className="input-field"
                             placeholder="name@company.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -50,11 +52,11 @@ const Login = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Password</label>
+                        <label className="block text-[var(--text-secondary)] text-sm font-medium mb-2 pl-1">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? "text" : "password"}
-                                className="input-field bg-slate-900 border-slate-700 focus:border-brand-blue w-full pr-10"
+                                className="input-field pr-10"
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -62,7 +64,7 @@ const Login = () => {
                             />
                             <button
                                 type="button"
-                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -70,15 +72,15 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-primary mt-6 bg-brand-blue hover:bg-blue-600">
+                    <button type="submit" className="btn-primary">
                         Sign In
                     </button>
 
-                    <div className="flex justify-center items-center mt-6 gap-2 text-sm text-slate-400">
+                    <div className="flex justify-center items-center mt-6 gap-2 text-sm text-[var(--text-secondary)]">
                         <span>Don't have an account?</span>
                         <span
                             onClick={() => navigate('/register')}
-                            className="text-brand-blue hover:text-blue-400 cursor-pointer transition-colors font-medium"
+                            className="text-brand-blue font-semibold hover:text-blue-600 cursor-pointer transition-colors"
                         >
                             Register now
                         </span>
