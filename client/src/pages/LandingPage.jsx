@@ -15,9 +15,9 @@ const LandingPage = () => {
                         v2.0 is now live
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold text-[var(--text-primary)] mb-6 tracking-tight animate-slide-up">
+                    <h1 className="text-5xl md:text-7xl font-bold text-[var(--text-primary)] mb-6 tracking-tight leading-tight animate-slide-up">
                         Secure File Sharing <br />
-                        <span className="text-brand-blue inline-block bg-gradient-to-r from-blue-600 to-cyan-500 text-transparent bg-clip-text">Reimagined.</span>
+                        <span className="text-brand-blue inline-block bg-gradient-to-r from-blue-600 to-cyan-500 text-transparent bg-clip-text pb-2">Reimagined.</span>
                     </h1>
 
                     <p className="text-xl text-[var(--text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>

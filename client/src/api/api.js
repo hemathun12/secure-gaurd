@@ -30,7 +30,7 @@ export const uploadFile = (file, onUploadProgress) => {
 
 export const listFiles = () => api.get('/files');
 export const listSharedFiles = () => api.get('/files/shared');
-export const shareFile = (fileId, recipientEmail) => api.post('/files/share', { fileId, recipientEmail });
+export const shareFile = (fileId, recipientEmail, password) => api.post('/files/share', { fileId, recipientEmail, password });
 export const downloadFile = (id) => api.get(`/files/download/${id}`, { responseType: 'blob' });
 export const deleteFile = (id) => api.delete(`/files/${id}`);
 export const getFilePermissions = (id) => api.get(`/files/${id}/permissions`);
@@ -38,5 +38,9 @@ export const revokeAccess = (fileId, userId) => api.delete(`/files/${fileId}/per
 export const getFilesStatus = (userId) => api.get(`/files/status/${userId}`);
 export const searchUsers = (query) => api.get(`/users/search?q=${query}`);
 export const getStorageUsage = () => api.get('/files/storage');
+export const verifyPassword = (password) => api.post('/auth/verify-password', { password });
+export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
+export const resetPassword = (token, newPassword) => api.post('/auth/reset-password', { token, newPassword });
+export const deleteAccount = (password) => api.delete('/users/me', { data: { password } });
 
 export default api;

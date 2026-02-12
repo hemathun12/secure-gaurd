@@ -8,6 +8,8 @@ import FilesPage from './pages/FilesPage';
 import SearchPage from './pages/SearchPage';
 import ProfilePage from './pages/ProfilePage';
 import LandingPage from './pages/LandingPage';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Navbar from './components/Navbar';
 
 const ProtectedRoute = ({ children }) => {
@@ -17,15 +19,26 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  if (user) return <Navigate to="/files" />;
+  return children;
+};
+
 function AppRoutes() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="container mx-auto p-4 pt-24 flex-grow">
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* Public Routes */}
+          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+          <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
+          {/* Protected Routes */}
           <Route path="/upload" element={
             <ProtectedRoute>
               <UploadPage />

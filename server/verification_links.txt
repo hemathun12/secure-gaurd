@@ -1,0 +1,2 @@
+test_1770901687597@example.com: http://localhost:5173/verify-email?token=88ac4e4ecb93c99f6ef614a6a97cca3e87ed2bb5656bdbe714edd3db5dcef8eb
+test_1770901785333@example.com: http://localhost:5173/verify-email?token=f4126010f046e18c7273b4986b035745fc3fcba04a15c9dd9636ff9032b08164

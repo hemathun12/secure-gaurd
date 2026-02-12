@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite';
 import path from 'path';
 
-const dbPath = path.resolve('database.sqlite');
+const dbPath = path.join(import.meta.dir, '../../database.sqlite');
 const db = new Database(dbPath);
 
 // Initialize Database Schema
@@ -13,6 +13,8 @@ const initDb = () => {
       username TEXT UNIQUE NOT NULL,
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      is_verified INTEGER DEFAULT 0,
+      verification_token TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);

@@ -5,6 +5,7 @@ import userModel from '../models/userModel.js';
 import aiService from '../services/aiService.js';
 import cryptoService from '../services/cryptoService.js';
 import storageService from '../services/storageService.js';
+import emailService from '../services/emailService.js';
 
 export const uploadFile = async (req, res) => {
     if (!req.file) {
@@ -107,14 +108,20 @@ export const downloadFile = async (req, res) => {
 // --- Sharing Controllers ---
 
 export const shareFile = (req, res) => {
-    const { fileId, recipientEmail } = req.body;
+    const { fileId, recipientEmail, password } = req.body;
     const ownerId = req.user.id;
 
-    if (!fileId || !recipientEmail) {
-        return res.status(400).json({ message: 'File ID and recipient email are required' });
+    if (!fileId || !recipientEmail || !password) {
+        return res.status(400).json({ message: 'File ID, recipient email, and password are required' });
     }
 
     try {
+        // Verify Password
+        const userAuth = userModel.findUserAuthData(ownerId);
+        if (!userAuth || !userModel.validatePassword(userAuth, password)) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
+
         const recipient = userModel.findUserByEmail(recipientEmail);
         if (!recipient) {
             return res.status(404).json({ message: 'Recipient user not found' });
@@ -125,6 +132,21 @@ export const shareFile = (req, res) => {
         }
 
         fileModel.shareFile(fileId, recipient.id, ownerId);
+
+        // Send Email Notification
+        try {
+            const file = fileModel.getFileById(fileId);
+            const owner = userModel.findUserById(ownerId);
+            if (file && owner) {
+                // Determine sharedBy name (username or email)
+                const sharedByName = owner.username || owner.email;
+                emailService.sendShareNotification(recipient.email, sharedByName, file.filename);
+            }
+        } catch (emailErr) {
+            console.error('Failed to send share email:', emailErr);
+            // Non-blocking error
+        }
+
         res.json({ message: `File shared successfully with ${recipient.username}` });
 
     } catch (err) {

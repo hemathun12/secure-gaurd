@@ -31,11 +31,11 @@ const Navbar = () => {
                                 <Link to="/search" className="text-[var(--text-secondary)] hover:text-brand-blue transition-colors text-sm font-medium">Find Users</Link>
                             </div>
 
-                            <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-primary)] hover:bg-slate-100 dark:hover:bg-slate-800 border border-[var(--border-color)] transition-all group">
+                            <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-primary)] hover:bg-slate-50 dark:hover:bg-slate-800 border border-[var(--border-color)] transition-all group">
                                 <div className="w-6 h-6 rounded-full bg-brand-blue flex items-center justify-center text-xs font-bold text-white shadow-md">
                                     {user.username.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="text-sm font-medium text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">{user.username}</span>
+                                <span className="text-sm font-medium text-[var(--text-secondary)] group-hover:text-brand-blue transition-colors">{user.username}</span>
                             </Link>
                         </>
                     ) : (

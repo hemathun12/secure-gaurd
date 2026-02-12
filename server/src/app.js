@@ -45,6 +45,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Start Server
-app.listen(PORT, '0.0.0.0', () => {
+// Start Server
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+server.on('error', (err) => {
+  console.error('Server failed to start:', err);
 });

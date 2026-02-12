@@ -1,9 +1,29 @@
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { deleteAccount } from '../api/api';
+import PasswordPromptModal from '../components/PasswordPromptModal';
 
 const ProfilePage = () => {
     const { user, logout } = useAuth();
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     if (!user) return null;
+
+    const handleDeleteAccount = async (password) => {
+        setLoading(true);
+        try {
+            await deleteAccount(password);
+            // Logout will redirect to login
+            logout();
+        } catch (err) {
+            console.error('Failed to delete account', err);
+            alert(err.response?.data?.message || 'Failed to delete account');
+        } finally {
+            setLoading(false);
+            setShowDeleteModal(false);
+        }
+    };
 
     return (
         <div className="w-full text-[var(--text-primary)] animate-slide-up">
@@ -27,10 +47,18 @@ const ProfilePage = () => {
 
                             <button
                                 onClick={logout}
-                                className="w-full py-2.5 px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm"
+                                className="w-full py-2.5 px-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm mb-3"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                 Sign Out
+                            </button>
+
+                            <button
+                                onClick={() => setShowDeleteModal(true)}
+                                className="w-full py-2.5 px-4 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                Delete Account
                             </button>
                         </div>
                     </div>
@@ -62,6 +90,14 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
+
+            <PasswordPromptModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onSuccess={handleDeleteAccount}
+                title="Delete Account"
+                message="Please enter your password to confirm account deletion. This action cannot be undone."
+            />
         </div>
     );
 };

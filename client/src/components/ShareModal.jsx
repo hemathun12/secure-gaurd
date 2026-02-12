@@ -1,22 +1,27 @@
 
 import { useState } from 'react';
 import { shareFile } from '../api/api';
-import UserSearch from './UserSearch';
+import PasswordPromptModal from './PasswordPromptModal';
 
 const ShareModal = ({ file, onClose, onShareSuccess }) => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
 
     if (!file) return null;
 
-    const handleShare = async (e) => {
+    const handleShareClick = (e) => {
         e.preventDefault();
+        setShowPasswordPrompt(true);
+    };
+
+    const performShare = async (password) => {
         setLoading(true);
         setMessage('');
 
         try {
-            await shareFile(file.id, email);
+            await shareFile(file.id, email, password);
             setMessage(`Successfully shared ${file.filename} with ${email}`);
             setEmail('');
             if (onShareSuccess) onShareSuccess();
@@ -45,7 +50,7 @@ const ShareModal = ({ file, onClose, onShareSuccess }) => {
                     </button>
                 </div>
 
-                <form onSubmit={handleShare} className="p-6">
+                <form onSubmit={handleShareClick} className="p-6">
                     <div className="mb-6 bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-color)]">
                         <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider font-semibold mb-1">File</p>
                         <p className="font-semibold text-[var(--text-primary)] truncate">{file.filename}</p>
@@ -63,7 +68,6 @@ const ShareModal = ({ file, onClose, onShareSuccess }) => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter user email"
                             className="input-field"
-                        // Using input-field class which already has theme variables
                         />
                     </div>
 
@@ -94,6 +98,14 @@ const ShareModal = ({ file, onClose, onShareSuccess }) => {
                     </div>
                 </form>
             </div>
+
+            <PasswordPromptModal
+                isOpen={showPasswordPrompt}
+                onClose={() => setShowPasswordPrompt(false)}
+                onSuccess={performShare}
+                title="Confirm Share"
+                message={`Please enter your password to confirm sharing "${file.filename}" with ${email}.`}
+            />
         </div>
     );
 };

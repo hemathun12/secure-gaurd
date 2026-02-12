@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getFilesStatus, shareFile, revokeAccess } from '../api/api';
+import PasswordPromptModal from './PasswordPromptModal';
 
 const UserFileAccessModal = ({ targetUser, onClose }) => {
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [pendingShareFile, setPendingShareFile] = useState(null);
 
     useEffect(() => {
         fetchFileStatus();
@@ -23,24 +25,46 @@ const UserFileAccessModal = ({ targetUser, onClose }) => {
     };
 
     const handleToggleAccess = async (file) => {
-        const action = file.is_shared ? 'revoke' : 'share';
+        if (file.is_shared) {
+            // Revoke access immediately (no password required as per original logic)
+            await performRevoke(file);
+        } else {
+            // Share access requires password
+            setPendingShareFile(file);
+        }
+    };
+
+    const performRevoke = async (file) => {
+        try {
+            await revokeAccess(file.id, targetUser.id);
+            updateFileState(file.id, false);
+        } catch (err) {
+            console.error("Failed to revoke access", err);
+            alert(`Failed to revoke access. ${err.response?.data?.message || ''}`);
+        }
+    };
+
+    const performShare = async (password) => {
+        if (!pendingShareFile) return;
 
         try {
-            if (action === 'share') {
-                await shareFile(file.id, targetUser.email);
-            } else {
-                await revokeAccess(file.id, targetUser.id);
-            }
-
-            // Update local state
-            setFiles(files.map(f =>
-                f.id === file.id ? { ...f, is_shared: !f.is_shared } : f
-            ));
-
+            await shareFile(pendingShareFile.id, targetUser.email, password);
+            updateFileState(pendingShareFile.id, true);
+            setPendingShareFile(null);
         } catch (err) {
-            console.error(`Failed to ${action} access`, err);
-            alert(`Failed to ${action} access. ${err.response?.data?.message || ''}`);
+            console.error("Failed to share access", err);
+            // Error handling is mostly done in PasswordPromptModal now for the password check,
+            // but if the share itself fails (e.g. network), we alert here.
+            // Actually PasswordPromptModal catches verify errors.
+            // shareFile also does verification on backend.
+            alert(`Failed to share access. ${err.response?.data?.message || ''}`);
         }
+    };
+
+    const updateFileState = (fileId, isShared) => {
+        setFiles(files.map(f =>
+            f.id === fileId ? { ...f, is_shared: isShared } : f
+        ));
     };
 
     return (
@@ -50,6 +74,12 @@ const UserFileAccessModal = ({ targetUser, onClose }) => {
                     <h3 className="text-xl font-bold text-[var(--text-primary)]">
                         Access for: <span className="text-brand-blue">{targetUser.username}</span>
                     </h3>
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors p-1 rounded-full hover:bg-[var(--bg-primary)]"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
 
                 <div className="p-6">
@@ -88,7 +118,7 @@ const UserFileAccessModal = ({ targetUser, onClose }) => {
                     </div>
                 </div>
 
-                <div className="p-4 border-t border-[var(--border-color)] flex justify-end">
+                <div className="p-4 border-t border-[var(--border-color)] flex justify-end bg-[var(--bg-primary)]/50">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-colors text-sm font-semibold"
@@ -97,6 +127,14 @@ const UserFileAccessModal = ({ targetUser, onClose }) => {
                     </button>
                 </div>
             </div>
+
+            <PasswordPromptModal
+                isOpen={!!pendingShareFile}
+                onClose={() => setPendingShareFile(null)}
+                onSuccess={performShare}
+                title="Confirm Share"
+                message={`Please enter your password to grant access to "${pendingShareFile?.filename}".`}
+            />
         </div>
     );
 };

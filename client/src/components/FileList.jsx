@@ -3,6 +3,7 @@ import { listFiles, listSharedFiles, downloadFile, deleteFile } from '../api/api
 import { getFileIcon } from '../utils/fileUtils';
 import ShareModal from './ShareModal';
 import ManageAccessModal from './ManageAccessModal';
+import PasswordPromptModal from './PasswordPromptModal';
 import { Download, Share2, Trash2, Shield, Calendar, HardDrive, User, MoreVertical } from 'lucide-react';
 
 const FileList = ({ refreshTrigger, type = 'mine' }) => {
@@ -10,6 +11,7 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
     const [loading, setLoading] = useState(true);
     const [selectedFileForShare, setSelectedFileForShare] = useState(null);
     const [selectedFileForAccess, setSelectedFileForAccess] = useState(null);
+    const [selectedFileForDownload, setSelectedFileForDownload] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredFiles = files.filter(file =>
@@ -32,7 +34,14 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
         }
     };
 
-    const handleDownload = async (fileId, filename) => {
+    const handleDownloadRequest = (file) => {
+        setSelectedFileForDownload(file);
+    };
+
+    const performDownload = async () => {
+        if (!selectedFileForDownload) return;
+        const { id: fileId, filename } = selectedFileForDownload;
+
         try {
             const response = await downloadFile(fileId);
             const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -142,7 +151,7 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
                             {/* Action Bar (Reveals on Hover mostly, but always accessible) */}
                             <div className="mt-4 pt-4 border-t border-[var(--border-color)] flex justify-end gap-2">
                                 <button
-                                    onClick={() => handleDownload(file.id, file.filename)}
+                                    onClick={() => handleDownloadRequest(file)}
                                     className="p-2 text-[var(--text-secondary)] hover:text-brand-blue hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                     title="Download"
                                 >
@@ -193,6 +202,14 @@ const FileList = ({ refreshTrigger, type = 'mine' }) => {
                     onClose={() => setSelectedFileForAccess(null)}
                 />
             )}
+
+            <PasswordPromptModal
+                isOpen={!!selectedFileForDownload}
+                onClose={() => setSelectedFileForDownload(null)}
+                onSuccess={performDownload}
+                title="Download Authorization"
+                message={`Please enter your password to download "${selectedFileForDownload?.filename}".`}
+            />
         </div>
     );
 };
