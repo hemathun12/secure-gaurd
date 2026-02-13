@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext'; // Assuming register is exposed
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
@@ -32,7 +32,7 @@ const Register = () => {
 
         try {
             const response = await register(formData.username, formData.email, formData.password);
-            setSuccessMessage(response.message || 'Registration successful! Please check your email to verify your account.');
+            setSuccessMessage(response.message || 'Registration successful! You can now log in.');
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to register');
         }
